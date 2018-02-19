@@ -6963,7 +6963,7 @@ MonoBehaviour:
   rightRB: {fileID: 722809281}
   head: {fileID: 641403079}
   shooter: {fileID: 1194384275}
-  file: C:\Users\Computing\Documents\GitHub\MarkovModelTesting\CsvRecords\world
+  number: test
 --- !u!114 &535617620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6981,7 +6981,7 @@ MonoBehaviour:
   rightRB: {fileID: 722809281}
   head: {fileID: 641403079}
   shooter: {fileID: 1194384275}
-  file: C:\Users\Computing\Documents\GitHub\MarkovModelTesting\CsvRecords\local
+  number: test
 --- !u!1 &536707368
 GameObject:
   m_ObjectHideFlags: 0

@@ -20,17 +20,23 @@ public class TransformDataRecorder : MonoBehaviour
     [SerializeField]
     clayShooter shooter;
 
-    [SerializeField]
-    string file;
+	[SerializeField]
+	string number;
 
-    TextWriter textWriter;
-    CsvWriter csvWriter;
+	string directory = "C:\\Users\\marlon\\Documents\\GitHub\\GalleryData\\";
+	string filename = "\\globalData";
 
-    TransformData data;
+	TextWriter textWriter;
+	CsvWriter csvWriter;
 
-    private void Start()
-    {
-        textWriter = File.CreateText(file);
+	TransformData data;
+
+	private void Start()
+	{
+		directory += number;
+		Directory.CreateDirectory (directory);
+		directory += filename;
+		textWriter = File.CreateText(directory);
         csvWriter = new CsvWriter(textWriter);
         csvWriter.Configuration.RegisterClassMap<TransformDataMap>();
         csvWriter.WriteHeader<TransformData>();

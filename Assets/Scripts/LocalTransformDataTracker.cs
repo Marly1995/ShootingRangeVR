@@ -21,7 +21,10 @@ public class LocalTransformDataTracker : MonoBehaviour
     clayShooter shooter;
 
     [SerializeField]
-    string file;
+    string number;
+
+	string directory = "C:\\Users\\marlon\\Documents\\GitHub\\GalleryData\\";
+	string filename = "\\localData";
 
     TextWriter textWriter;
     CsvWriter csvWriter;
@@ -30,7 +33,10 @@ public class LocalTransformDataTracker : MonoBehaviour
 
     private void Start()
     {
-        textWriter = File.CreateText(file);
+		directory += number;
+		Directory.CreateDirectory (directory);
+		directory += filename;
+		textWriter = File.CreateText(directory);
         csvWriter = new CsvWriter(textWriter);
         csvWriter.Configuration.RegisterClassMap<TransformDataMap>();
         csvWriter.WriteHeader<TransformData>();

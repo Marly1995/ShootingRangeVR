@@ -6,7 +6,8 @@ public class clayShooter : MonoBehaviour
 {
     public AudioSource shot;
     public AudioSource info;
-    public AudioClip[] audioArray;
+    public AudioClip wavecompleted;
+    public AudioClip shotclip;
 
     [SerializeField]
     GameObject rightHand;
@@ -41,6 +42,7 @@ public class clayShooter : MonoBehaviour
     float lastTime;
     int prevPosition;
     int pidgeonsReleased;
+    bool playGame = false;
 
     public bool started = false;
 
@@ -57,28 +59,23 @@ public class clayShooter : MonoBehaviour
         set { gesturing = value; }
     }
 
-    public int gestureNumber = 100;
-
-    List<int> numbers;
-
     private void Start()
     {
         shot = GetComponent<AudioSource>();
-        numbers = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         WorldState.Waves = 0;
+        instructions.text = "Press a to begin";
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.KeypadEnter)) { started = true; }
-        if (WorldState.Waves >= 10)
+        if (OVRInput.GetDown(OVRInput.Button.One)) { started = true; playGame = true; }
+        if (WorldState.Waves >= 5)
         {
             instructions.text = "Thanks For Playing!";
         }
         else if (started)
         {
-            if (Time.time - timeTillNextShot >= lastTime &&
-                !gestureTime)
+            if (Time.time - timeTillNextShot >= lastTime && playGame)
             {
                 int num = Random.Range(0, positions.Length);
                 if (num == prevPosition) { num = (num == 0) ? num + 1 : num - 1; }
@@ -87,49 +84,30 @@ public class clayShooter : MonoBehaviour
                 GameObject temp = Instantiate(pidgeon, positions[num].position, Quaternion.identity);
                 temp.GetComponent<Rigidbody>().AddForce(Vector3.up * Random.Range(minHeight, maxHeight), ForceMode.Impulse);
                 temp.GetComponent<Rigidbody>().AddTorque(Vector3.up * Random.Range(-1f, 1f), ForceMode.Impulse);
+                info.clip = shotclip;
                 shot.Play();
 
                 lastTime = Time.time;
                 timeTillNextShot = Random.Range(minDelay, maxDelay);
                 pidgeonsReleased++;
+                instructions.text = "Shoot the targets!";
             }
 
             if (pidgeonsReleased >= 10)
             {
-                gestureTime = true;
-                int numPos = Random.Range(0, numbers.Count);
-                gestureNumber = numbers[numPos];
-                info.clip = audioArray[numbers[numPos]];
-                info.Play(40000);
-                numbers.RemoveAt(numPos);
-                instructions.text = "Draw:  " + gestureNumber.ToString();
+                info.clip = wavecompleted;
+                info.Play();
+                WorldState.Waves++;
+                instructions.text = "Wave " + WorldState.Waves.ToString();
                 pidgeonsReleased = 0;
-            }
-            else
-            {
-                if (OVRInput.GetDown(OVRInput.Button.One))
-                {
-                    rightTrail.transform.position = rightHand.transform.position;
-                    leftTrail.transform.position = leftHand.transform.position;
-                    rightTrail.transform.parent = rightHand.transform;
-                    leftTrail.transform.parent = leftHand.transform;
-                    gesturing = true;
-                }
-                if (OVRInput.GetUp(OVRInput.Button.One))
-                {
-                    rightTrail.transform.parent = null;
-                    leftTrail.transform.parent = null;
-                    gesturing = false;
-                    WorldState.Waves++;
-                    Invoke("StopGestureTime", 1.5f);
-                }
+                playGame = false;
+                Invoke("NextWave", 3.0f);
             }
         }
     }
 
-    void StopGestureTime()
+    void NextWave()
     {
-        gestureTime = false;
-        instructions.text = "Shoot the targets!";
+        playGame = true;
     }
 }
